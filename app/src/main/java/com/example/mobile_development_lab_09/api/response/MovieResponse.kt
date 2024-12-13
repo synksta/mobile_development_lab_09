@@ -1,4 +1,4 @@
-package com.example.mobile_development_lab_09.api.model
+package com.example.mobile_development_lab_09.api.response
 
 import com.example.mobile_development_lab_09.model.Movie
 import com.google.gson.annotations.SerializedName

@@ -12,7 +12,7 @@ import com.example.mobile_development_lab_09.db.MovieDatabase
 import com.example.mobile_development_lab_09.viewmodel.MovieViewModel
 import com.example.mobile_development_lab_09.viewmodel.MovieViewModelFactory
 import com.example.mobile_development_lab_09.databinding.ActivityMoviesToWatchBinding
-import com.example.mobile_development_lab_09.ui.MovieAdapter
+import com.example.mobile_development_lab_09.ui.MoviesToWatchAdapter
 
 class MoviesToWatchActivity : AppCompatActivity() {
 
@@ -42,7 +42,7 @@ class MoviesToWatchActivity : AppCompatActivity() {
                 binding.recyclerView.visibility = View.VISIBLE
                 binding.emptyView.visibility = View.GONE
 
-                binding.recyclerView.adapter = MovieAdapter(movies)
+                binding.recyclerView.adapter = MoviesToWatchAdapter(movies)
             }
         })
 
@@ -70,7 +70,7 @@ class MoviesToWatchActivity : AppCompatActivity() {
     }
 
     private fun deleteSelectedMovies() {
-        val selectedMovies = (binding.recyclerView.adapter as? MovieAdapter)?.getSelectedMovies()
+        val selectedMovies = (binding.recyclerView.adapter as? MoviesToWatchAdapter)?.getSelectedMovies()
         if (!selectedMovies.isNullOrEmpty()) {
             movieViewModel.deleteMovies(selectedMovies)
             // Обновите список фильмов после удаления, если это необходимо.

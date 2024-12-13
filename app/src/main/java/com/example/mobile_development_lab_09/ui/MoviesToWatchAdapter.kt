@@ -7,7 +7,7 @@ import com.example.mobile_development_lab_09.model.Movie
 import com.example.mobile_development_lab_09.databinding.ItemMoviesToWatchBinding
 import com.example.mobile_development_lab_09.extenstion.fetchImage
 
-class MovieAdapter(private val moviesList: List<Movie>) : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
+class MoviesToWatchAdapter(private val moviesList: List<Movie>) : RecyclerView.Adapter<MoviesToWatchAdapter.MovieViewHolder>() {
 
     private val selectedMovies = mutableSetOf<Movie>()
 
