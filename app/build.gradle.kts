@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -49,10 +49,12 @@ dependencies {
 
 
     implementation("androidx.room:room-runtime:2.6.1") // Основная библиотека Room
-    kapt("androidx.room:room-compiler:2.6.1") // Компилятор для аннотаций
+    ksp("androidx.room:room-compiler:2.6.1") // Компилятор для аннотаций
     implementation("androidx.room:room-ktx:2.6.1") // KTX для удобства работы с Room
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.picasso:picasso:2.71828")
+
 //    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 //    implementation(libs.androidx.fragment.ktx)
 //
