@@ -1,5 +1,6 @@
 package com.example.mobile_development_lab_09
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -48,9 +49,9 @@ class MoviesToWatchActivity : AppCompatActivity() {
 
         // Обработка нажатия на FAB для добавления нового фильма.
         binding.fabAddMovie.setOnClickListener {
-            // Здесь можно открыть диалог или новую активити для добавления фильма.
-            // Например:
-            // openAddMovieDialog()
+            // Создаем Intent для перехода в AddMovieActivity
+            val intent = Intent(this, AddMovieActivity::class.java)
+            startActivity(intent) // Запускаем новую активность
         }
     }
 

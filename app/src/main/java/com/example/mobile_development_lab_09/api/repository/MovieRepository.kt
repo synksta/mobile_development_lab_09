@@ -1,19 +1,26 @@
 package com.example.mobile_development_lab_09.api.repository
 
+import android.util.Log
 import com.example.mobile_development_lab_09.api.ApiService
 import com.example.mobile_development_lab_09.api.response.MovieResult
+import com.example.mobile_development_lab_09.model.Movie
 
 class MovieRepository(private val apiService: ApiService) {
 
     suspend fun searchMovies(searchQuery: String, year: String? = null): MovieResult {
         return try {
             val response = apiService.searchMovies(searchQuery, year)
+
+            // Проверка успешного ответа
             if (response.response == "True") {
-                // Успешный ответ
-                MovieResult.Success(response.movies)
+                val movies = response.movies?.mapNotNull {
+                    if (it.isMovie()) it.toMovie() else null
+                } ?: emptyList() // Если movies == null, возвращаем пустой список
+
+                MovieResult.Success(movies)
             } else {
                 // Ошибка от API
-                MovieResult.Error(response.totalResults) // Или фиксированное сообщение
+                MovieResult.Error(response.error ?: "Unknown API error")
             }
         } catch (e: Exception) {
             // Исключение при выполнении запроса
@@ -24,12 +31,14 @@ class MovieRepository(private val apiService: ApiService) {
     suspend fun getMovie(title: String, year: String? = null): MovieResult {
         return try {
             val response = apiService.getMovie(title, year)
-            if (response.imdbId.isNotEmpty()) {
-                // Успешный ответ
-                MovieResult.Success(listOf(response)) // Возвращаем фильм как список
+
+            // Проверка успешного ответа
+            if (response.response == "True") {
+                val movies = listOf(response.toMovie())
+                MovieResult.Success(movies)
             } else {
                 // Ошибка от API
-                MovieResult.Error("Movie not found!")
+                MovieResult.Error(response.error ?: "Unknown API error")
             }
         } catch (e: Exception) {
             // Исключение при выполнении запроса

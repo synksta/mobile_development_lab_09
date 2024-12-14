@@ -1,5 +1,6 @@
 package com.example.mobile_development_lab_09.api
 
+import com.example.mobile_development_lab_09.api.response.ApiResponse
 import com.example.mobile_development_lab_09.api.response.MovieResponse
 import com.example.mobile_development_lab_09.api.response.MoviesListResponse
 import retrofit2.http.GET
@@ -10,11 +11,11 @@ interface ApiService {
     suspend fun searchMovies(
         @Query("s") search: String,
         @Query("y") year: String? = null
-    ): MoviesListResponse
+    ): ApiResponse
 
     @GET("/")
     suspend fun getMovie(
         @Query("t") search: String,
         @Query("y") year: String? = null
-    ): MovieResponse
+    ): ApiResponse
 }
