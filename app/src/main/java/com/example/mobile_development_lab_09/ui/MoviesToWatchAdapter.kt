@@ -2,20 +2,22 @@ package com.example.mobile_development_lab_09.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mobile_development_lab_09.databinding.ItemMovieBinding
 import com.example.mobile_development_lab_09.model.Movie
-import com.example.mobile_development_lab_09.databinding.ItemMoviesToWatchBinding
 import com.example.mobile_development_lab_09.extenstion.fetchImage
 
 class MoviesToWatchAdapter(private val moviesList: List<Movie>) : RecyclerView.Adapter<MoviesToWatchAdapter.MovieViewHolder>() {
 
     private val selectedMovies = mutableSetOf<Movie>()
 
-    class MovieViewHolder(private val binding: ItemMoviesToWatchBinding) : RecyclerView.ViewHolder(binding.root) {
+    class MovieViewHolder(private val binding: ItemMovieBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(movie: Movie, isSelected: Boolean, onSelectChangeListener: (Boolean) -> Unit) {
             binding.textViewTitle.text = movie.title
             binding.textViewYear.text = movie.year
+            binding.textViewType.isVisible = false
             binding.imageViewPoster.fetchImage(movie.poster)
             binding.checkboxSelect.isChecked = isSelected
 
@@ -30,7 +32,7 @@ class MoviesToWatchAdapter(private val moviesList: List<Movie>) : RecyclerView.A
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
-        val binding = ItemMoviesToWatchBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemMovieBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MovieViewHolder(binding)
     }
 

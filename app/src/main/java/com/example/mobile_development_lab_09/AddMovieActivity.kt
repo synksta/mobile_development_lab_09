@@ -1,5 +1,7 @@
 package com.example.mobile_development_lab_09
 
+import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,14 +9,16 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mobile_development_lab_09.api.ApiClient.apiService
-import com.example.mobile_development_lab_09.api.Fetcher
+import com.example.mobile_development_lab_09.api.ApiFetcher
 import com.example.mobile_development_lab_09.api.repository.MovieRepository
-import com.example.mobile_development_lab_09.api.response.MovieResponse
-import com.example.mobile_development_lab_09.api.response.MovieResult
+import com.example.mobile_development_lab_09.api.response.ApiResult
 import com.example.mobile_development_lab_09.databinding.ActivityAddMovieBinding
 import com.example.mobile_development_lab_09.db.MovieDatabase
 import com.example.mobile_development_lab_09.extenstion.fetchImage
@@ -26,8 +30,8 @@ import java.util.Calendar
 class AddMovieActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddMovieBinding
-    private lateinit var fetcher: Fetcher
-
+    private lateinit var apiFetcher: ApiFetcher
+    private lateinit var getMovieLauncher: ActivityResultLauncher<Intent>
     private var isUserInput: Boolean = false
 
     // Переменная movie с пользовательским сеттером
@@ -57,6 +61,8 @@ class AddMovieActivity : AppCompatActivity() {
         outState.putParcelable("movie", movie) // Сохраняем переменную movie в Bundle
     }
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -64,9 +70,22 @@ class AddMovieActivity : AppCompatActivity() {
         binding = ActivityAddMovieBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Изменяем ориентацию LinearLayout в зависимости от положения экрана
+        val orientation = resources.configuration.orientation
+        val params = binding.formLayout.layoutParams as LinearLayout.LayoutParams
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            binding.root.orientation = LinearLayout.HORIZONTAL // Устанавливаем горизонтальную ориентацию
+            params.weight = 1.5f
+            binding.formLayout.layoutParams = params
+        } else {
+            binding.root.orientation = LinearLayout.VERTICAL // Устанавливаем вертикальную ориентацию
+            params.weight = 3.5f
+            binding.formLayout.layoutParams = params
+        }
+
         // Инициализация Fetcher
         val movieRepository = MovieRepository(apiService)
-        fetcher = Fetcher(movieRepository)
+        apiFetcher = ApiFetcher(movieRepository)
 
         // Настройка Spinner для выбора года
         setupYearSpinner()
@@ -74,14 +93,35 @@ class AddMovieActivity : AppCompatActivity() {
         // Восстановление состояния переменной movie
         if (savedInstanceState != null) {
             movie = savedInstanceState.getParcelable("movie", Movie::class.java) // Восстанавливаем переменную movie
+            Log.e("GOOOOD", "$movie")
         }
+
+
+        getMovieLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                movie = result.data?.getParcelableExtra("movie", Movie::class.java)
+            }
+        }
+
 
         // Обработка нажатия на кнопку Browse для поиска фильмов
         binding.buttonSearch.setOnClickListener {
-//            val intent = Intent(this, MoviesBrowseActivity::class.java)
-            Toast.makeText(this, "Browse clicked", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, MoviesBrowseActivity::class.java)
 
+            val title: String = binding.editTextTitle.text.toString()
+            val selectedYear = binding.spinnerYear.selectedItem.toString()
+            val year: String? = if (selectedYear == "Any") null else selectedYear
+
+            binding.editTextTitle.clearFocus()
+            binding.spinnerYear.clearFocus()
+
+            // Передаем title и year в Intent
+            intent.putExtra("title", title)
+            intent.putExtra("year", year)
+
+            getMovieLauncher.launch(intent) // Используем лончер для запуска активности
         }
+
 
         // Устанавливаем слушатель для обработки пользовательского ввода
         binding.editTextTitle.setOnFocusChangeListener { _, hasFocus ->
@@ -153,31 +193,18 @@ class AddMovieActivity : AppCompatActivity() {
         val year: String? = if (selectedYear == "Any") null else selectedYear
 
         binding.progressBar.visibility = View.VISIBLE
-        fetcher.fetchMovie(title, year) { result ->
+        apiFetcher.fetchMovie(title, year) { result ->
             when (result) {
-                is MovieResult.Success -> {
+                is ApiResult.Success -> {
                     binding.progressBar.visibility = View.GONE
                     if (result.movies.isNotEmpty()) {
-
                         movie = result.movies.first() // Присваиваем значение переменной movie
-
-//                        val fetchedTitle: String = movie!!.title
-//                        val fetchedYear: String = movie!!.year
-//                        val fetchedPoster: String = movie!!.poster
-//
-//                        // Заполняем поля данными из ответа API
-//                        binding.editTextTitle.setText(fetchedTitle)
-//                        // Убедитесь, что year - это строка и соответствует элементам спиннера
-//                        setYearSpinnerValue(fetchedYear)
-//                        binding.poster.fetchImage(fetchedPoster)
-//
-//                        // Обновляем состояние кнопки после получения данных
-//                        updateButtonState()
                     } else {
                         showError("No movies found") // Обработка случая, если список фильмов пуст
                     }
                 }
-                is MovieResult.Error -> {
+                is ApiResult.Error -> {
+                    binding.progressBar.visibility = View.GONE
                     Log.e("GMD", result.message)
                     showError(result.message) // Показать сообщение об ошибке через Toast
                 }
@@ -212,4 +239,9 @@ class AddMovieActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
+    companion object {
+        const val REQUEST_CODE = 1001 // Или любое другое значение
+    }
+
 }
+

@@ -1,8 +1,6 @@
 package com.example.mobile_development_lab_09.api
 
 import com.example.mobile_development_lab_09.api.response.ApiResponse
-import com.example.mobile_development_lab_09.api.response.MovieResponse
-import com.example.mobile_development_lab_09.api.response.MoviesListResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/formLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_weight="3.5">
 
         <EditText
             android:id="@+id/editTextTitle"
@@ -41,16 +44,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/search_movie"/>
-
-        <ImageView
-            android:id="@+id/poster"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:scaleType="fitCenter"
-            android:contentDescription="@string/poster"
-            android:layout_margin="32dp"/>
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/poster"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/poster"
+        android:layout_margin="16dp"
+        android:layout_weight="1"/>
 
     <!-- ProgressBar, расположенный поверх всех элементов -->
     <ProgressBar
@@ -60,5 +63,4 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"/>
-
-</FrameLayout>
+</LinearLayout>

@@ -18,13 +18,13 @@ data class ApiResponse(
     @SerializedName("Poster") val poster: String? = null
 ) {
     fun isMovie(): Boolean{
-        return response=="True" && imdbId!=null && title!=null && year!=null && type!=null && poster!=null
+        return imdbId!=null && title!=null && year!=null && type!=null && poster!=null
     }
     fun isSearch(): Boolean{
         return response=="True" && movies!=null && totalResults!=null
     }
     fun toMovie(): Movie? {
-        return if (response=="True" && imdbId!=null && title!=null && year!=null && type!=null && poster!=null){
+        return if (imdbId!=null && title!=null && year!=null && type!=null && poster!=null){
             Movie(
                 imdbId = this.imdbId,
                 title = this.title,
