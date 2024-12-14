@@ -37,12 +37,24 @@ class AddMovieActivity : AppCompatActivity() {
         set(value) {
             _movie = value
             updateButtonState() // Обновляем состояние кнопки при изменении movie
-            if (value==null) binding.poster.setImageDrawable(null)
+            if (value==null){
+                Log.e("GMD", "Gawd mothafuckin dayum")
+                binding.poster.setImageDrawable(null)}
+            else{
+                binding.editTextTitle.setText(value.title)
+                setYearSpinnerValue(value.year)
+                binding.poster.fetchImage(value.poster)
+            }
         }
 
     // ViewModel для работы с базой данных
     private val movieViewModel: MovieViewModel by viewModels {
         MovieViewModelFactory(MovieDatabase.getDatabase(application).movieDao())
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable("movie", movie) // Сохраняем переменную movie в Bundle
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,6 +70,11 @@ class AddMovieActivity : AppCompatActivity() {
 
         // Настройка Spinner для выбора года
         setupYearSpinner()
+
+        // Восстановление состояния переменной movie
+        if (savedInstanceState != null) {
+            movie = savedInstanceState.getParcelable("movie", Movie::class.java) // Восстанавливаем переменную movie
+        }
 
         // Обработка нажатия на кнопку Browse для поиска фильмов
         binding.buttonSearch.setOnClickListener {
@@ -144,18 +161,18 @@ class AddMovieActivity : AppCompatActivity() {
 
                         movie = result.movies.first() // Присваиваем значение переменной movie
 
-                        val fetchedTitle: String = movie!!.title
-                        val fetchedYear: String = movie!!.year
-                        val fetchedPoster: String = movie!!.poster
-
-                        // Заполняем поля данными из ответа API
-                        binding.editTextTitle.setText(fetchedTitle)
-                        // Убедитесь, что year - это строка и соответствует элементам спиннера
-                        setYearSpinnerValue(fetchedYear)
-                        binding.poster.fetchImage(fetchedPoster)
-
-                        // Обновляем состояние кнопки после получения данных
-                        updateButtonState()
+//                        val fetchedTitle: String = movie!!.title
+//                        val fetchedYear: String = movie!!.year
+//                        val fetchedPoster: String = movie!!.poster
+//
+//                        // Заполняем поля данными из ответа API
+//                        binding.editTextTitle.setText(fetchedTitle)
+//                        // Убедитесь, что year - это строка и соответствует элементам спиннера
+//                        setYearSpinnerValue(fetchedYear)
+//                        binding.poster.fetchImage(fetchedPoster)
+//
+//                        // Обновляем состояние кнопки после получения данных
+//                        updateButtonState()
                     } else {
                         showError("No movies found") // Обработка случая, если список фильмов пуст
                     }
@@ -167,9 +184,6 @@ class AddMovieActivity : AppCompatActivity() {
             }
         }
     }
-
-
-
 
     private fun addMovieToDatabase() {
         if (movie != null){

@@ -1,6 +1,7 @@
 package com.example.mobile_development_lab_09
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -8,6 +9,7 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mobile_development_lab_09.db.MovieDatabase
 import com.example.mobile_development_lab_09.viewmodel.MovieViewModel
@@ -32,7 +34,13 @@ class MoviesToWatchActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Настройка RecyclerView.
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        val layoutManager = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            GridLayoutManager(this, 2) // Два столбца в альбомной ориентации
+        } else {
+            LinearLayoutManager(this) // Один столбец в портретной ориентации
+        }
+
+        binding.recyclerView.layoutManager = layoutManager
 
         // Наблюдение за изменениями в списке фильмов.
         movieViewModel.allMovies.observe(this, Observer { movies ->
@@ -49,11 +57,11 @@ class MoviesToWatchActivity : AppCompatActivity() {
 
         // Обработка нажатия на FAB для добавления нового фильма.
         binding.fabAddMovie.setOnClickListener {
-            // Создаем Intent для перехода в AddMovieActivity
             val intent = Intent(this, AddMovieActivity::class.java)
             startActivity(intent) // Запускаем новую активность
         }
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_movies_to_watch, menu)
